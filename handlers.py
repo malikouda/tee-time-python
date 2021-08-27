@@ -54,7 +54,6 @@ def confirm_booking(driver, full_name, phone_number, notes, testing):
     )
 
     if element.get_attribute("value") != full_name:
-        print("setting name")
         while element.get_attribute("value") != "":
             element.send_keys(Keys.BACKSPACE)
         element.send_keys(full_name)
@@ -64,7 +63,6 @@ def confirm_booking(driver, full_name, phone_number, notes, testing):
     )
 
     if element.get_attribute("value") != phone_number:
-        print("setting phone number")
         while element.get_attribute("value") != "+":
             element.send_keys(Keys.BACKSPACE)
         element.send_keys(phone_number)
