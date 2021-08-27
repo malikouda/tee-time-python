@@ -1,0 +1,84 @@
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+
+def handle_text_form(driver, **elements):
+    for (element_id, data) in elements.items():
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, element_id))
+        )
+        element.send_keys(data)
+
+    element.submit()
+
+
+def construct_url(base_url, **params):
+    new_url = f"{base_url}/?"
+    new_url += "&".join(
+        [f"{param}={value}" for param, value in params.items() if value]
+    )
+    return new_url
+
+
+def book_earliest_date(driver):
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//*[@id='app-container']/div/div[2]/div/div[2]/div[2]/div[2]/div[1]/div/button",
+            )
+        )
+    )
+    element.click()
+
+
+def continue_to_book(driver):
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cboAgreeTOC"))
+    )
+    element.click()
+
+    element = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//*[@data-testid='continue-to-book-btn']")
+        )
+    )
+    element.click()
+
+
+def confirm_booking(driver, full_name, phone_number, notes, testing):
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "Payment.Name"))
+    )
+
+    if element.get_attribute("value") != full_name:
+        print("setting name")
+        while element.get_attribute("value") != "":
+            element.send_keys(Keys.BACKSPACE)
+        element.send_keys(full_name)
+
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "phone-form-control"))
+    )
+
+    if element.get_attribute("value") != phone_number:
+        print("setting phone number")
+        while element.get_attribute("value") != "+":
+            element.send_keys(Keys.BACKSPACE)
+        element.send_keys(phone_number)
+
+    if notes:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "Reservation.CustomerNotes"))
+        )
+        element.send_keys(notes)
+
+    if not testing:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//*[@data-testid='make-your-reservation-btn']")
+            )
+        )
+        element.click()
