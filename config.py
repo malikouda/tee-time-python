@@ -1,28 +1,38 @@
-from os import getenv
-from dotenv import load_dotenv
-from courses import Courses
-from transportation import Transportation
 from datetime import date
-
-load_dotenv("./secrets.env")
+from courses import Courses
 
 
 class Config:
-    # all should be strings
-    username = getenv("MAGNOLIA_USERNAME")  # username (set in secrets.env)
-    password = getenv("MAGNOLIA_PASSWORD")  # password (set in secrets.env)
-    selected_courses = [Courses.avery_ranch, Courses.falconhead]  # courses to look for
-    date = str(date.today())  # date
-    start = None  # 00 - 23
-    end = None  # 00- 23
-    min = None  # price
-    max = None  # price
-    golfers = None  # None - 4 | None means "any"
-    holes = None  # None, 9, or 18 | None means 9 or 18
-    transportation = None  # walking or riding | None means riding or walking
-
-    # For "confirm booking" page
-    full_name = getenv("MAGNOLIA_FULL_NAME") # Full name
-    phone_number = getenv("MAGNOLIA_PHONE_NUMBER")  # phone number
-    notes = None  # any notes for your reservation
-    testing = True  # set this to false to actually make the reservation
+    def __init__(
+        self,
+        username=None,
+        password=None,
+        courses=[Courses.avery_ranch],
+        full_name=None,
+        phone_number=None,
+        testing=True,
+        date=str(date.today()),
+        notes=None,
+        start_hour=None,
+        end_hour=None,
+        min_price=None,
+        max_price=None,
+        num_golfers=None,
+        num_holes=None,
+        transportation_type=None,
+    ):
+        self.username = username
+        self.password = password
+        self.selected_courses = courses
+        self.full_name = full_name
+        self.phone_number = phone_number
+        self.notes = notes
+        self.testing = testing
+        self.date = date
+        self.start = start_hour
+        self.end = end_hour
+        self.min = min_price
+        self.max = max_price
+        self.golfers = num_golfers
+        self.holes = num_holes
+        self.transportation = transportation_type

@@ -8,7 +8,9 @@ from selenium.webdriver.common.by import By
 from time import sleep
 
 
-def main():
+def book(args):
+    config = Config(**args)
+
     base_url = "https://magnolia-golf.book.teeitup.com"
 
     try:
@@ -17,7 +19,7 @@ def main():
 
         # Log in
         handlers.handle_text_form(
-            driver=driver, txtUsername=Config.username, txtPassword=Config.password
+            driver=driver, txtUsername=config.username, txtPassword=config.password
         )
 
         # Wait for page to load
@@ -26,15 +28,15 @@ def main():
         # Construct new url to set params
         new_url = handlers.construct_url(
             base_url=base_url,
-            course=",".join(c.value for c in Config.selected_courses),
-            date=Config.date,
-            end=Config.end,
-            start=Config.start,
-            min=Config.min,
-            max=Config.max,
-            golfers=Config.golfers,
-            holes=Config.holes,
-            transportation=Config.transportation,
+            course=",".join(c.value for c in config.selected_courses),
+            date=config.date,
+            end=config.end,
+            start=config.start,
+            min=config.min,
+            max=config.max,
+            golfers=config.golfers,
+            holes=config.holes,
+            transportation=config.transportation,
         )
 
         # Go to the new constructed url with options set
@@ -56,10 +58,10 @@ def main():
         # Confirm booking
         handlers.confirm_booking(
             driver=driver,
-            full_name=Config.full_name,
-            phone_number=Config.phone_number,
-            notes=Config.notes,
-            testing=Config.testing,
+            full_name=config.full_name,
+            phone_number=config.phone_number,
+            notes=config.notes,
+            testing=config.testing,
         )
 
         # Make sure reservation was made successfully
@@ -70,7 +72,3 @@ def main():
     finally:
         # Always quit driver
         driver.quit()
-
-
-if __name__ == "__main__":
-    main()
