@@ -47,7 +47,7 @@ def continue_to_book(driver, golfers):
     if int(golfers) > len(num_golfers_buttons):
         num_golfers_buttons[-1].click()
     else:
-        num_golfers_buttons[int(golfers)-1].click()
+        num_golfers_buttons[int(golfers) - 1].click()
 
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "cboAgreeTOC"))
