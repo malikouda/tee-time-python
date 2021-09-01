@@ -38,6 +38,7 @@ parser.add_argument("--min-price", type=str, help="Min price")
 parser.add_argument("--max-price", type=str, help="Max price")
 parser.add_argument(
     "--num-golfers",
+    required=True,
     type=str,
     choices=list(str(n) for n in range(1, 5)),
     help="Number of golfers",
