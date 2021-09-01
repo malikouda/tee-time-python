@@ -6,35 +6,46 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from time import sleep
+import logging
 
 
 def book(args):
+    logging.basicConfig(filename='teetimes.txt',
+                        format='%(asctime)s :: %(levelname)s :: %(message)s',
+                        encoding='utf-8', level=logging.INFO)
     booked = False
     try_num = 0
-    max_tries = 5
+    max_tries = 10
 
     config = Config(**args)
-
     base_url = "https://magnolia-golf.book.teeitup.com"
 
-    while not booked and try_num <= max_tries:
-        try_num += 1
-        try:
-            driver = webdriver.Chrome()
-            driver.get(f"{base_url}/login")
+    try:
+        driver = webdriver.Chrome()
+        logging.info('*'*30)
+        logging.info('*'*30)
+        logging.info('Logging in')
+        driver.get(f"{base_url}/login")
 
-            # Log in
-            handlers.handle_text_form(
-                driver=driver, txtUsername=config.username, txtPassword=config.password
-            )
+        logging.info('handle_text_form')
+        # Log in
+        handlers.handle_text_form(
+            driver=driver, txtUsername=config.username, txtPassword=config.password
+        )
 
-            # Wait for page to load
-            WebDriverWait(driver, 10).until(EC.url_contains("course"))
+        logging.info('Wait for page to load')
+        # Wait for page to load
+        WebDriverWait(driver, 100).until(EC.url_contains("course"))
 
+        for c in config.selected_courses:
+            try_num = 0
+            if booked:
+                break
+            logging.info(f'Starting with {c.name}')
             # Construct new url to set params
             new_url = handlers.construct_url(
                 base_url=base_url,
-                course=",".join(c[0].value for c in config.selected_courses),
+                course=c.value,
                 date=config.date,
                 end=config.end,
                 start=config.start,
@@ -45,39 +56,71 @@ def book(args):
                 transportation=config.transportation,
             )
 
-            # Go to the new constructed url with options set
-            driver.get(new_url)
+            while not booked and try_num <= max_tries:
+                logging.info(f'Trying {c.name} for the {try_num} time')
+                try_num += 1
+                # Go to the new constructed url with options set
+                logging.info(f'Navigating to: {new_url}')
+                driver.get(new_url)
 
-            # Wait for tee times to load
-            WebDriverWait(driver, 30).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[@data-testid='teetimes-header-date']")
-                )
-            )
+                try:
+                    # First check to see if there are no tee times
+                    no_tee_times = None
+                    try:
+                        no_tee_times = WebDriverWait(driver, 5).until(
+                            EC.presence_of_element_located(
+                                (By.XPATH,
+                                 "//*[@data-testid='no-tee-times-found']")
+                            )
+                        )
+                    except Exception as e:
+                        logging.error(e.args)
+                        logging.error('assuming we found some tee times')
+                    if no_tee_times:
+                        logging.warning(f'No tee times found for loop {try_num}')
+                        continue
 
-            # Book earliest
-            handlers.book_earliest_date(driver=driver)
+                    # Wait for tee times to load
+                    WebDriverWait(driver, 30).until(
+                        EC.presence_of_element_located(
+                            (By.XPATH,
+                             "//*[@data-testid='teetimes-header-date']")
+                        )
+                    )
+                    logging.info('found tee times')
 
-            # Continue to book
-            handlers.continue_to_book(driver=driver)
+                    # Book earliest
+                    handlers.book_earliest_date(driver=driver)
+                    logging.info('booked earliest')
 
-            # Confirm booking
-            handlers.confirm_booking(
-                driver=driver,
-                full_name=config.full_name,
-                phone_number=config.phone_number,
-                notes=config.notes,
-                testing=config.testing,
-            )
+                    # Continue to book
+                    handlers.continue_to_book(driver=driver)
+                    logging.info('continued to book')
 
-            # Make sure reservation was made successfully
-            if driver.current_url.contains("confirmation"):
-                booked = True
-
-            sleep(20)
-
-        except Exception as e:
-            print(e)
-        finally:
-            # Always quit driver
-            driver.quit()
+                    # Confirm booking
+                    handlers.confirm_booking(
+                        driver=driver,
+                        full_name=config.full_name,
+                        phone_number=config.phone_number,
+                        notes=config.notes,
+                        testing=config.testing,
+                    )
+                    logging.info('confirmed booking')
+                    if config.testing:
+                        booked = True
+                        logging.info('Testing booking complete')
+                        sleep(2)
+                    # Make sure reservation was made successfully
+                    if "confirmation" in driver.current_url:
+                        booked = True
+                        logging.info('Confirmed Tee Time')
+                except Exception as e:
+                    print(e.args)
+                    logging.error(e.args)
+                    logging.error('error while looking for tee time')
+    except Exception as e:
+        print(e.args)
+        logging.error(e.args)
+    finally:
+        # Always quit driver
+        driver.quit()

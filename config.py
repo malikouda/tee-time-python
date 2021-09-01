@@ -1,5 +1,6 @@
-from datetime import date
+from datetime import datetime
 from courses import Courses
+from datetime import timedelta
 
 
 class Config:
@@ -7,11 +8,11 @@ class Config:
         self,
         username=None,
         password=None,
-        courses=[Courses.avery_ranch],
+        courses=[Courses.avery_ranch,Courses.falconhead],
         full_name=None,
         phone_number=None,
         testing=True,
-        date=str(date.today()),
+        date=str(datetime.now() + timedelta(days=10,hours=6))[:10],
         notes=None,
         start_hour=None,
         end_hour=None,

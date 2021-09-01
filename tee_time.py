@@ -9,8 +9,7 @@ parser.add_argument("--password", required=True, type=str, help="Magnolia passwo
 parser.add_argument(
     "--courses",
     type=parser_utils.handle_courses,
-    required=True,
-    default="avery_ranch",
+    default=argparse.SUPPRESS,
     nargs="+",
     metavar=["avery_ranch", "teravista", "falconhead"],
     help="Which course(s) to book for",
@@ -26,7 +25,7 @@ parser.add_argument("--notes", type=str, help="Booking notes")
 parser.add_argument(
     "--testing", action="store_true", help="Do not complete booking (testing purposes only)"
 )
-parser.add_argument("--date", type=str, help="Date to book for")
+parser.add_argument("--date", default=argparse.SUPPRESS, type=str, help="Date to book for")
 parser.add_argument(
     "--start-hour",
     type=parser_utils.handle_hour,

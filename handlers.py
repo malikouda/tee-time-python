@@ -23,15 +23,15 @@ def construct_url(base_url, **params):
 
 
 def book_earliest_date(driver):
-    element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
+    all_tee_times = WebDriverWait(driver, 1).until(
+        EC.presence_of_all_elements_located(
             (
-                By.XPATH,
-                "//*[@id='app-container']/div/div[2]/div/div[2]/div[2]/div[2]/div[1]/div/button",
+                By.CSS_SELECTOR,
+                "[data-testid='teetimes_book_now_button']",
             )
         )
     )
-    element.click()
+    all_tee_times[0].click()
 
 
 def continue_to_book(driver):
