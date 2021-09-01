@@ -100,7 +100,7 @@ def book(args):
                     logging.info("booked earliest")
 
                     # Continue to book
-                    handlers.continue_to_book(driver=driver,golfers=config.golfers)
+                    handlers.continue_to_book(driver=driver, golfers=config.golfers)
                     logging.info("continued to book")
 
                     # Confirm booking
