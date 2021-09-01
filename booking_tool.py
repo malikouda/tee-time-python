@@ -9,10 +9,14 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import logging
 
+
 def book(args):
-    logging.basicConfig(filename='teetimes.txt',
-                        format='%(asctime)s :: %(levelname)s :: %(message)s',
-                        encoding='utf-8', level=logging.INFO)
+    logging.basicConfig(
+        filename="teetimes.txt",
+        format="%(asctime)s :: %(levelname)s :: %(message)s",
+        encoding="utf-8",
+        level=logging.INFO,
+    )
     booked = False
     try_num = 0
     max_tries = 10
@@ -26,18 +30,18 @@ def book(args):
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
         driver = webdriver.Chrome(chrome_options=chrome_options)
-        logging.info('*'*150)
-        logging.info('*'*150)
-        logging.info('Logging in')
+        logging.info("*" * 150)
+        logging.info("*" * 150)
+        logging.info("Logging in")
         driver.get(f"{base_url}/login")
 
-        logging.info('handle_text_form')
+        logging.info("handle_text_form")
         # Log in
         handlers.handle_text_form(
             driver=driver, txtUsername=config.username, txtPassword=config.password
         )
 
-        logging.info('Wait for initial page to load')
+        logging.info("Wait for initial page to load")
         # Wait for page to load
         WebDriverWait(driver, 100).until(EC.url_contains("course"))
 
@@ -45,7 +49,7 @@ def book(args):
             try_num = 0
             if booked:
                 break
-            logging.info(f'Starting with {c.name}')
+            logging.info(f"Starting with {c.name}")
             # Construct new url to set params
             new_url = handlers.construct_url(
                 base_url=base_url,
@@ -61,10 +65,10 @@ def book(args):
             )
 
             while not booked and try_num <= max_tries:
-                logging.info(f'Trying {c.name} for the {try_num} time')
+                logging.info(f"Trying {c.name} for the {try_num} time")
                 try_num += 1
                 # Go to the new constructed url with options set
-                logging.info(f'Navigating to: {new_url}')
+                logging.info(f"Navigating to: {new_url}")
                 driver.get(new_url)
 
                 try:
@@ -73,33 +77,31 @@ def book(args):
                     try:
                         no_tee_times = WebDriverWait(driver, 5).until(
                             EC.presence_of_element_located(
-                                (By.XPATH,
-                                 "//*[@data-testid='no-tee-times-found']")
+                                (By.XPATH, "//*[@data-testid='no-tee-times-found']")
                             )
                         )
                     except Exception as e:
                         logging.error(e.args)
-                        logging.error('assuming we found some tee times')
+                        logging.error("assuming we found some tee times")
                     if no_tee_times:
-                        logging.warning(f'No tee times found for loop {try_num}')
+                        logging.warning(f"No tee times found for loop {try_num}")
                         continue
 
                     # Wait for tee times to load
                     WebDriverWait(driver, 30).until(
                         EC.presence_of_element_located(
-                            (By.XPATH,
-                             "//*[@data-testid='teetimes-header-date']")
+                            (By.XPATH, "//*[@data-testid='teetimes-header-date']")
                         )
                     )
-                    logging.info('found tee times')
+                    logging.info("found tee times")
 
                     # Book earliest
                     handlers.book_earliest_date(driver=driver)
-                    logging.info('booked earliest')
+                    logging.info("booked earliest")
 
                     # Continue to book
                     handlers.continue_to_book(driver=driver,golfers=config.golfers)
-                    logging.info('continued to book')
+                    logging.info("continued to book")
 
                     # Confirm booking
                     handlers.confirm_booking(
@@ -109,22 +111,22 @@ def book(args):
                         notes=config.notes,
                         testing=config.testing,
                     )
-                    logging.info('confirmed booking')
+                    logging.info("confirmed booking")
                     if config.testing:
                         booked = True
-                        logging.info('Testing booking complete')
+                        logging.info("Testing booking complete")
                         sleep(2)
                         continue
 
                     # Make sure reservation was made successfully
-                    logging.info('Wait for confirmation page to load')
+                    logging.info("Wait for confirmation page to load")
                     WebDriverWait(driver, 30).until(EC.url_contains("confirmation"))
                     booked = True
-                    logging.info('got to confirmation page')
+                    logging.info("got to confirmation page")
                 except Exception as e:
                     print(e.args)
                     logging.error(e.args)
-                    logging.error('error while looking for tee time')
+                    logging.error("error while looking for tee time")
     except Exception as e:
         print(e.args)
         logging.error(e.args)

@@ -7,11 +7,8 @@ def handle_phone_number(num):
     return f"+1 ({num[:3]}) {num[3:6]}-{num[6:]}"
 
 
-def handle_courses(*courses):
-    new = []
-    for course in courses:
-        new.append(getattr(Courses, course))
-    return new
+def handle_courses(course):
+    return getattr(Courses, course)
 
 
 def handle_hour(num):
