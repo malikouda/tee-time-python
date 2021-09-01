@@ -26,8 +26,8 @@ def book(args):
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
         driver = webdriver.Chrome(chrome_options=chrome_options)
-        logging.info('*'*30)
-        logging.info('*'*30)
+        logging.info('*'*150)
+        logging.info('*'*150)
         logging.info('Logging in')
         driver.get(f"{base_url}/login")
 
