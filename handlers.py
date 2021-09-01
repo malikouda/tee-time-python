@@ -1,3 +1,4 @@
+from time import sleep
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -34,7 +35,20 @@ def book_earliest_date(driver):
     all_tee_times[0].click()
 
 
-def continue_to_book(driver):
+def continue_to_book(driver, golfers):
+    num_golfers_buttons = WebDriverWait(driver, 10).until(
+        EC.presence_of_all_elements_located(
+            (
+                By.CSS_SELECTOR,
+                '[data-testid="player-count"] > button'
+            )
+        )
+    )
+    if int(golfers) > len(num_golfers_buttons):
+        num_golfers_buttons[-1].click()
+    else:
+        num_golfers_buttons[int(golfers)-1].click()
+
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "cboAgreeTOC"))
     )

@@ -12,7 +12,7 @@ class Config:
         full_name=None,
         phone_number=None,
         testing=True,
-        date=str(datetime.now() + timedelta(days=10,hours=6))[:10],
+        date=str(datetime.now() + timedelta(days=10,hours=3))[:10],
         notes=None,
         start_hour=None,
         end_hour=None,

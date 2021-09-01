@@ -37,7 +37,7 @@ def book(args):
             driver=driver, txtUsername=config.username, txtPassword=config.password
         )
 
-        logging.info('Wait for page to load')
+        logging.info('Wait for initial page to load')
         # Wait for page to load
         WebDriverWait(driver, 100).until(EC.url_contains("course"))
 
@@ -98,7 +98,7 @@ def book(args):
                     logging.info('booked earliest')
 
                     # Continue to book
-                    handlers.continue_to_book(driver=driver)
+                    handlers.continue_to_book(driver=driver,golfers=config.golfers)
                     logging.info('continued to book')
 
                     # Confirm booking
@@ -114,10 +114,13 @@ def book(args):
                         booked = True
                         logging.info('Testing booking complete')
                         sleep(2)
+                        continue
+
                     # Make sure reservation was made successfully
-                    if "confirmation" in driver.current_url:
-                        booked = True
-                        logging.info('Confirmed Tee Time')
+                    logging.info('Wait for confirmation page to load')
+                    WebDriverWait(driver, 30).until(EC.url_contains("confirmation"))
+                    booked = True
+                    logging.info('got to confirmation page')
                 except Exception as e:
                     print(e.args)
                     logging.error(e.args)
