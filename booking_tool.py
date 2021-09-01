@@ -4,10 +4,10 @@ from config import Config
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from time import sleep
 import logging
-
 
 def book(args):
     logging.basicConfig(filename='teetimes.txt',
@@ -21,7 +21,11 @@ def book(args):
     base_url = "https://magnolia-golf.book.teeitup.com"
 
     try:
-        driver = webdriver.Chrome()
+        chrome_options = Options()
+        chrome_options.headless = True
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
+        driver = webdriver.Chrome(chrome_options=chrome_options)
         logging.info('*'*30)
         logging.info('*'*30)
         logging.info('Logging in')
