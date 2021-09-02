@@ -1,4 +1,6 @@
+import logging
 from time import sleep
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -21,6 +23,26 @@ def construct_url(base_url, **params):
         [f"{param}={value}" for param, value in params.items() if value]
     )
     return new_url
+
+
+def check_for_tee_times(driver):
+    # wait until tee times are loaded or no tee times element is found
+    WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//*[@data-testid='no-tee-times-found']|//*[@data-testid='teetimes_book_now_button']",
+            )
+        )
+    )
+    try:
+        return (
+            driver.find_element_by_xpath("//*[@data-testid='no-tee-times-found']")
+            == None
+        )
+    except NoSuchElementException as e:
+        logging.warning("going ahead, assuming we found some tee times")
+    return True
 
 
 def book_earliest_date(driver):
