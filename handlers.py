@@ -38,10 +38,7 @@ def book_earliest_date(driver):
 def continue_to_book(driver, golfers):
     num_golfers_buttons = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located(
-            (
-                By.CSS_SELECTOR,
-                '[data-testid="player-count"] > button'
-            )
+            (By.CSS_SELECTOR, '[data-testid="player-count"] > button')
         )
     )
     if int(golfers) > len(num_golfers_buttons):

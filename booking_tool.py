@@ -113,6 +113,16 @@ def book(args):
                     )
                     logging.info("confirmed booking")
                     if config.testing:
+                        back_btn = WebDriverWait(driver, 5).until(
+                            EC.presence_of_element_located(
+                                (
+                                    By.XPATH,
+                                    "//button[@data-testid='cancel-and-go-back-btn']",
+                                )
+                            )
+                        )
+                        back_btn.click()
+                        WebDriverWait(driver, 10).until(EC.url_to_be(f"{base_url}/"))
                         booked = True
                         logging.info("Testing booking complete")
                         sleep(2)
