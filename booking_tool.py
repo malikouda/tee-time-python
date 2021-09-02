@@ -11,12 +11,6 @@ import logging
 
 
 def book(args):
-    logging.basicConfig(
-        filename="teetimes.txt",
-        format="%(asctime)s :: %(levelname)s :: %(message)s",
-        encoding="utf-8",
-        level=logging.INFO,
-    )
     booked = False
     try_num = 0
     max_tries = 10
@@ -72,28 +66,12 @@ def book(args):
                 driver.get(new_url)
 
                 try:
-                    # First check to see if there are no tee times
-                    no_tee_times = None
-                    try:
-                        no_tee_times = WebDriverWait(driver, 5).until(
-                            EC.presence_of_element_located(
-                                (By.XPATH, "//*[@data-testid='no-tee-times-found']")
-                            )
-                        )
-                    except Exception as e:
-                        logging.error(e.args)
-                        logging.error("assuming we found some tee times")
-                    if no_tee_times:
+                    found_tee_times = handlers.check_for_tee_times(driver=driver)
+                    if found_tee_times:
+                        logging.info("found tee times")
+                    else:
                         logging.warning(f"No tee times found for loop {try_num}")
                         continue
-
-                    # Wait for tee times to load
-                    WebDriverWait(driver, 30).until(
-                        EC.presence_of_element_located(
-                            (By.XPATH, "//*[@data-testid='teetimes-header-date']")
-                        )
-                    )
-                    logging.info("found tee times")
 
                     # Book earliest
                     handlers.book_earliest_date(driver=driver)

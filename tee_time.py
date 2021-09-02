@@ -1,4 +1,5 @@
 import argparse
+import logging
 import parser_utils
 from booking_tool import book
 
@@ -58,5 +59,12 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+
+logging.basicConfig(
+    filename="teetimes.txt",
+    format="%(asctime)s :: %(levelname)s :: %(message)s",
+    encoding="utf-8",
+    level=logging.INFO,
+)
 
 book(vars(args))
