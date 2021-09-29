@@ -5,3 +5,4 @@ chromedriver.exe
 .vscode
 teetimes.txt
 *.sh
+*.save

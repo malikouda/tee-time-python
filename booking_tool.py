@@ -8,12 +8,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from time import sleep
 import logging
-
+from datetime import datetime, time, timedelta
+import pause
 
 def book(args):
     booked = False
     try_num = 0
-    max_tries = 10
+    max_tries = 7
 
     config = Config(**args)
     base_url = "https://magnolia-golf.book.teeitup.com"
@@ -23,7 +24,7 @@ def book(args):
         chrome_options.headless = True
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-gpu")
-        driver = webdriver.Chrome(chrome_options=chrome_options)
+        driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver', chrome_options=chrome_options)
         logging.info("*" * 150)
         logging.info("*" * 150)
         logging.info("Logging in")
@@ -38,6 +39,12 @@ def book(args):
         logging.info("Wait for initial page to load")
         # Wait for page to load
         WebDriverWait(driver, 100).until(EC.url_contains("course"))
+
+        logging.info("Waiting for midnight")
+        midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1) - timedelta(seconds=1)
+        logging.info(f"midnight is {midnight}")
+        pause.until(midnight)
+        logging.info("It's midnight, let's go")
 
         for c in config.selected_courses:
             try_num = 0
@@ -72,6 +79,16 @@ def book(args):
                     else:
                         logging.warning(f"No tee times found for loop {try_num}")
                         continue
+
+                    try:
+                        # Print tee times found
+                        tee_times_found = driver.find_elements_by_css_selector("[data-testid='teetimes-tile-time']")
+                        if len(tee_times_found) > 0:
+                            logging.info(f"Going to try booking {tee_times_found[0].get_attribute('textContent')}")
+                            for t in tee_times_found:
+                                logging.info(f"**** {t.get_attribute('textContent')}")
+                    except:
+                        logging.warning("Error printing list of tee times")
 
                     # Book earliest
                     handlers.book_earliest_date(driver=driver)
