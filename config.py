@@ -8,7 +8,7 @@ class Config:
         self,
         username=None,
         password=None,
-        courses=[Courses.avery_ranch, Courses.falconhead],
+        courses=[Courses.avery_ranch, Courses.falconhead, Courses.teravista],
         full_name=None,
         phone_number=None,
         testing=True,
@@ -21,6 +21,7 @@ class Config:
         num_golfers=None,
         num_holes=None,
         transportation_type=None,
+        dont_wait=False,
     ):
         self.username = username
         self.password = password
@@ -37,3 +38,4 @@ class Config:
         self.golfers = num_golfers
         self.holes = num_holes
         self.transportation = transportation_type
+        self.dont_wait = dont_wait

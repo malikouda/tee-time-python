@@ -31,13 +31,13 @@ def check_for_tee_times(driver):
         EC.presence_of_element_located(
             (
                 By.XPATH,
-                "//*[@data-testid='no-tee-times-found']|//*[@data-testid='teetimes_book_now_button']",
+                "//*[@data-testid='no-tee-times-found'] | //*[@data-testid='teetimes_book_now_button'] | //*[@data-testid='no-records-found']",
             )
         )
     )
     try:
         return (
-            driver.find_element_by_xpath("//*[@data-testid='no-tee-times-found']")
+            driver.find_element_by_xpath("//*[@data-testid='no-tee-times-found'] | //*[@data-testid='no-records-found']")
             == None
         )
     except NoSuchElementException as e:
@@ -58,7 +58,7 @@ def book_earliest_date(driver):
 
 
 def continue_to_book(driver, golfers):
-    num_golfers_buttons = WebDriverWait(driver, 10).until(
+    num_golfers_buttons = WebDriverWait(driver, 15).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, '[data-testid="player-count"] > button')
         )

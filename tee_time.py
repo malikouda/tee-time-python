@@ -57,6 +57,11 @@ parser.add_argument(
     metavar=["walking", "riding"],
     help="Type of transportation",
 )
+parser.add_argument(
+    "--dont-wait",
+    action="store_true",
+    help="Don't wait until midnight to book",
+)
 
 args = parser.parse_args()
 

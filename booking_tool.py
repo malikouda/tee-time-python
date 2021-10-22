@@ -40,11 +40,12 @@ def book(args):
         # Wait for page to load
         WebDriverWait(driver, 100).until(EC.url_contains("course"))
 
-        logging.info("Waiting for midnight")
-        midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1) - timedelta(seconds=1)
-        logging.info(f"midnight is {midnight}")
-        pause.until(midnight)
-        logging.info("It's midnight, let's go")
+        if config.dont_wait == False:
+            logging.info("Waiting for midnight")
+            midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1) - timedelta(seconds=1)
+            logging.info(f"midnight is {midnight}")
+            pause.until(midnight)
+            logging.info("It's midnight, let's go")
 
         for c in config.selected_courses:
             try_num = 0
