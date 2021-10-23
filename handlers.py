@@ -56,9 +56,24 @@ def book_earliest_date(driver):
     )
     all_tee_times[0].click()
 
+    # wait until player count button on next screen or locked tee time message appears
+    WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//*[@data-testid='player-count'] | //*[@data-testid='main-alert-bar-message']",
+            )
+        )
+    )
+
 
 def continue_to_book(driver, golfers):
-    num_golfers_buttons = WebDriverWait(driver, 15).until(
+    try:
+        driver.find_element_by_xpath("//*[@data-testid='player-count']")
+    except NoSuchElementException as e:
+        raise Exception("Couldn't find Player Count button, tee time is likely locked")
+
+    num_golfers_buttons = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, '[data-testid="player-count"] > button')
         )
