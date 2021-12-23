@@ -84,19 +84,80 @@ def continue_to_book(driver, golfers):
         num_golfers_buttons[int(golfers) - 1].click()
 
     element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "cboAgreeTOC"))
+        EC.element_to_be_clickable(
+            (By.XPATH, "//*[@data-testid='modal-rate-proceed-to-checkout-btn']")
+        )
+    )
+    element.click()
+
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//*[@data-testid='terms-and-conditions-checkbox']"))
     )
     element.click()
 
     element = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
-            (By.XPATH, "//*[@data-testid='continue-to-book-btn']")
+            (By.XPATH, "//*[@data-testid='email-opt-in-checkbox-checkout']")
         )
     )
     element.click()
 
 
-def confirm_booking(driver, full_name, phone_number, notes, testing):
+def confirm_booking(driver, full_name, phone_number, notes, testing, cc_num, cc_month, cc_year, cc_cvv):
+    # Card Number
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (By.XPATH, "//*[@placeholder='Card Number *']")
+        )
+    )
+
+    if element.get_attribute('value').replace(" ", "") != cc_num:
+        while element.get_attribute('value') != "":
+            element.send_keys(Keys.BACKSPACE)
+        element.send_keys(cc_num)
+
+    # Card CVV
+    element = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.NAME, "Payment.CC.CVVCode"))
+    )
+
+    if element.get_attribute('value') != cc_cvv:
+        while element.get_attribute('value') != "":
+            element.send_keys(Keys.BACKSPACE)
+        element.send_keys(cc_cvv)
+    
+    # Card Month
+    element = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//*[@data-testid='credit-card-exp-month']")
+        )
+    )
+    element.click()
+
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (By.ID, "menu-Payment.CC.ExpirationMonth")
+        )
+    )
+    element = element.find_element_by_xpath(f".//li[@data-value='{cc_month}']")
+    element.click()
+
+    # Card year
+    element = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//*[@data-testid='credit-card-exp-year']")
+        )
+    )
+    element.click()
+
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (By.ID, "menu-Payment.CC.ExpirationYear")
+        )
+    )
+    element = element.find_element_by_xpath(f".//li[@data-value='{cc_year}']")
+    element.click()
+
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "Payment.Name"))
     )
@@ -120,6 +181,8 @@ def confirm_booking(driver, full_name, phone_number, notes, testing):
             EC.presence_of_element_located((By.NAME, "Reservation.CustomerNotes"))
         )
         element.send_keys(notes)
+    
+    sleep(10)
 
     if not testing:
         element = WebDriverWait(driver, 10).until(
