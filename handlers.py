@@ -181,8 +181,6 @@ def confirm_booking(driver, full_name, phone_number, notes, testing, cc_num, cc_
             EC.presence_of_element_located((By.NAME, "Reservation.CustomerNotes"))
         )
         element.send_keys(notes)
-    
-    sleep(10)
 
     if not testing:
         element = WebDriverWait(driver, 10).until(
