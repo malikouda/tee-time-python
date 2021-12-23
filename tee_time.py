@@ -63,9 +63,9 @@ parser.add_argument(
     help="Don't wait until midnight to book",
 )
 parser.add_argument('--cc-num', type=str, help="Credit card number")
-parser.add_argument('--cc-month', type=str, help="Credit card number")
-parser.add_argument('--cc-year', type=str, help="Credit card number")
-parser.add_argument('--cc-cvv', type=str, help="Credit card number")
+parser.add_argument('--cc-month', type=str, help="Credit card month")
+parser.add_argument('--cc-year', type=str, help="Credit card year")
+parser.add_argument('--cc-cvv', type=str, help="Credit card cvv")
 
 args = parser.parse_args()
 
