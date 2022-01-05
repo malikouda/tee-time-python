@@ -95,6 +95,13 @@ def book(args):
                     handlers.book_earliest_date(driver=driver)
                     logging.info("booked earliest")
 
+                    if config.testing:
+                        driver.back()
+                        booked = True
+                        logging.info("Test booking complete")
+                        sleep(2)
+                        continue
+
                     # Continue to book
                     handlers.continue_to_book(driver=driver, golfers=config.golfers)
                     logging.info("continued to book")
@@ -108,21 +115,6 @@ def book(args):
                         testing=config.testing,
                     )
                     logging.info("confirmed booking")
-                    if config.testing:
-                        back_btn = WebDriverWait(driver, 5).until(
-                            EC.presence_of_element_located(
-                                (
-                                    By.XPATH,
-                                    "//button[@data-testid='cancel-and-go-back-btn']",
-                                )
-                            )
-                        )
-                        back_btn.click()
-                        WebDriverWait(driver, 10).until(EC.url_to_be(f"{base_url}/"))
-                        booked = True
-                        logging.info("Testing booking complete")
-                        sleep(2)
-                        continue
 
                     # Make sure reservation was made successfully
                     logging.info("Wait for confirmation page to load")
