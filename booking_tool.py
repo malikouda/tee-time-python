@@ -113,6 +113,10 @@ def book(args):
                         phone_number=config.phone_number,
                         notes=config.notes,
                         testing=config.testing,
+                        cc_num=config.cc_num,
+                        cc_month=config.cc_month,
+                        cc_year=config.cc_year,
+                        cc_cvv=config.cc_cvv
                     )
                     logging.info("confirmed booking")
 

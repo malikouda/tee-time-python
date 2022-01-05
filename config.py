@@ -22,6 +22,10 @@ class Config:
         num_holes=None,
         transportation_type=None,
         dont_wait=False,
+        cc_num=None,
+        cc_month=None,
+        cc_year=None,
+        cc_cvv=None
     ):
         self.username = username
         self.password = password
@@ -39,3 +43,7 @@ class Config:
         self.holes = num_holes
         self.transportation = transportation_type
         self.dont_wait = dont_wait
+        self.cc_num = cc_num
+        self.cc_month = cc_month
+        self.cc_year = cc_year
+        self.cc_cvv = cc_cvv
