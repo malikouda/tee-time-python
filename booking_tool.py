@@ -40,7 +40,7 @@ def book(args):
         # Wait for page to load
         WebDriverWait(driver, 100).until(EC.url_contains("course"))
 
-        if config.dont_wait == False:
+        if not config.testing:
             logging.info("Waiting for midnight")
             midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1) - timedelta(seconds=1)
             logging.info(f"midnight is {midnight}")
@@ -95,16 +95,19 @@ def book(args):
                     handlers.book_earliest_date(driver=driver)
                     logging.info("booked earliest")
 
+                    # Continue to book
+                    keepgoing = handlers.continue_to_book(driver=driver, golfers=config.golfers)
+                    if not keepgoing:
+                        logging.info("something went wrong when continuing to book, going to next loop")
+                        continue
+                    logging.info("continued to book")
+
                     if config.testing:
-                        driver.back()
+                        handlers.cancel_booking(driver=driver)
                         booked = True
                         logging.info("Test booking complete")
                         sleep(2)
                         continue
-
-                    # Continue to book
-                    handlers.continue_to_book(driver=driver, golfers=config.golfers)
-                    logging.info("continued to book")
 
                     # Confirm booking
                     handlers.confirm_booking(

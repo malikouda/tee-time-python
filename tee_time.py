@@ -57,11 +57,6 @@ parser.add_argument(
     metavar=["walking", "riding"],
     help="Type of transportation",
 )
-parser.add_argument(
-    "--dont-wait",
-    action="store_true",
-    help="Don't wait until midnight to book",
-)
 parser.add_argument('--cc-num', type=str, help="Credit card number")
 parser.add_argument('--cc-month', type=str, help="Credit card month")
 parser.add_argument('--cc-year', type=str, help="Credit card year")

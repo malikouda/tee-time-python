@@ -66,98 +66,72 @@ def book_earliest_date(driver):
         )
     )
 
+def cancel_booking(driver):
+    element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (By.XPATH, "//*[@data-testid='cancel-and-go-back-btn']")
+        )
+    )
+    element.click()
+
 
 def continue_to_book(driver, golfers):
+    logging.info("before player count")
     try:
         driver.find_element_by_xpath("//*[@data-testid='player-count']")
     except NoSuchElementException as e:
         raise Exception("Couldn't find Player Count button, tee time is likely locked")
+    logging.info("after player count")
 
+    logging.info("before player count button")
     num_golfers_buttons = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located(
             (By.CSS_SELECTOR, '[data-testid="player-count"] > button')
         )
     )
+    logging.info("after player count button")
     if int(golfers) > len(num_golfers_buttons):
         num_golfers_buttons[-1].click()
     else:
         num_golfers_buttons[int(golfers) - 1].click()
+        logging.info("clicked player count button")
 
+    logging.info("before proceed checkbox")
     element = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
             (By.XPATH, "//*[@data-testid='modal-rate-proceed-to-checkout-btn']")
         )
     )
     element.click()
+    logging.info("after proceed checkbox")
+
+    logging.info("before t/c checkbox")
+    # wait until t&c checkbox or tee time locked message appears
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//*[@data-testid='terms-and-conditions-checkbox'] | //*[@data-testid='main-alert-bar-message']",
+            )
+        )
+    )
+
+    logging.info("one of the elements was found")
+    try:
+        driver.find_element_by_xpath("//*[@data-testid='main-alert-bar-message']")
+        return False
+    except NoSuchElementException as e:
+        logging.warning("going ahead, assuming tee time is not locked")
 
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//*[@data-testid='terms-and-conditions-checkbox']"))
     )
     element.click()
-
-    element = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//*[@data-testid='email-opt-in-checkbox-checkout']")
-        )
-    )
-    element.click()
+    logging.info("after t/c checkbox")
+    return True
 
 
 def confirm_booking(driver, full_name, phone_number, notes, testing, cc_num, cc_month, cc_year, cc_cvv):
-    # Card Number
-    element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
-            (By.XPATH, "//*[@placeholder='Card Number *']")
-        )
-    )
-
-    if element.get_attribute('value').replace(" ", "") != cc_num:
-        while element.get_attribute('value') != "":
-            element.send_keys(Keys.BACKSPACE)
-        element.send_keys(cc_num)
-
-    # Card CVV
-    element = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.NAME, "Payment.CC.CVVCode"))
-    )
-
-    if element.get_attribute('value') != cc_cvv:
-        while element.get_attribute('value') != "":
-            element.send_keys(Keys.BACKSPACE)
-        element.send_keys(cc_cvv)
-    
-    # Card Month
-    element = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//*[@data-testid='credit-card-exp-month']")
-        )
-    )
-    element.click()
-
-    element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
-            (By.ID, "menu-Payment.CC.ExpirationMonth")
-        )
-    )
-    element = element.find_element_by_xpath(f".//li[@data-value='{cc_month}']")
-    element.click()
-
-    # Card year
-    element = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//*[@data-testid='credit-card-exp-year']")
-        )
-    )
-    element.click()
-
-    element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
-            (By.ID, "menu-Payment.CC.ExpirationYear")
-        )
-    )
-    element = element.find_element_by_xpath(f".//li[@data-value='{cc_year}']")
-    element.click()
-
     element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "Payment.Name"))
     )
